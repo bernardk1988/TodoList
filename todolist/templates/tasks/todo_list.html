@@ -1,0 +1,199 @@
+
+{% extends 'base.html' %}
+
+{% block title %}My Todo Tasks{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-4">
+    <h2 class="fw-bold text-primary">
+        Todo Application
+    </h2>
+    <p class="text-muted">
+        Manage your daily tasks
+    </p>
+</div>
+
+<!-- Add Task Form -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Add New Task</h5>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Task Name</label>
+
+                <input type="text"
+                       name="task"
+                       class="form-control"
+                       placeholder="Enter your task"
+                       maxlength="200"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Date & Time</label>
+
+                <input type="datetime-local"
+                       name="datetime"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+
+                <select name="status" class="form-select">
+
+                    <option value="Pending">Pending</option>
+
+                    <option value="In Progress">In Progress</option>
+
+                    <option value="Completed">Completed</option>
+
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Add Task
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- Display Tasks -->
+<div class="card shadow-sm">
+
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">My Tasks</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Task</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for todo in todos %}
+
+                    <tr>
+
+                        <td>{{ todo.id }}</td>
+
+                        <td>{{ todo.task }}</td>
+
+                        <td>
+                            {{ todo.datetime|date:"d-m-Y H:i" }}
+                        </td>
+
+                        <td>
+
+                            {% if todo.status == 'Completed' %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% elif todo.status == 'In Progress' %}
+
+                                <span class="badge bg-warning text-dark">
+                                    In Progress
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    Pending
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'edit_todo' todo.id %}"
+                               class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
+
+                            <form method="POST"
+                                  action="{% url 'delete_todo' todo.id %}"
+                                  class="d-inline">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5"
+                            class="text-center text-muted py-4">
+
+                            No tasks available. Add your first task!
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+</div>
+<script>
+fetch('/api/todos/')
+    .then(response => {
+        console.log("HTTP Status:", response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log("Raw API Response:", data);
+
+        const result = JSON.parse(data);
+
+        console.log("Success:", result.success);
+        console.log("Message:", result.messages);
+        console.log("Todo Data:", result.data);
+    })
+    .catch(error => {
+        console.error("API Error:", error);
+    });
+</script>
+
+{% endblock %}

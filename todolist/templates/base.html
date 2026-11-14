@@ -1,0 +1,63 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+     <title>{% block title %}Todo Application{% endblock %}</title>
+     {% comment %} {% bootstrap_css %} {% endcomment %}
+    <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <!--css-->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+     {% block extra_css %}
+     {% endblock %}
+</head>
+<body class="bg-light">
+
+     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'todo_list' %}">
+                Todo Application
+            </a>
+            <a href="{% url 'todo_api' %}"
+               class="btn btn-light btn-sm">
+                REST API
+            </a>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="text-center py-3 text-muted">
+        <p class="mb-0">
+            &copy; 2026 Todo Application | Django REST Framework
+        </p>
+    </footer>
+
+     {% comment %} {% bootstrap_javascript %} {% endcomment %}
+    <!-- Bootstrap JS -->
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- custom js-->
+    <script src="{% static 'js/script.js' %}"></script>
+     {% block extra_js %}{% endblock %}
+
+</body>
+</html>
